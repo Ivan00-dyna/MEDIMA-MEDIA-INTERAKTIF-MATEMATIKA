@@ -1,0 +1,550 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MEDIMA — Materi & Kuis Permutasi/Kombinasi</title>
+  <style>
+    /* FONT */
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Poppins:wght@400;600&display=swap');
+
+    /* --- BASIC LAYOUT --- */
+    :root{
+      --merah:#b22222;
+      --emas:#d4af37;
+      --bg1:#1a1a1a;
+      --card:#2a2a2a;
+      --glass: rgba(255,255,255,0.04);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family:'Montserrat',sans-serif;
+      background: linear-gradient(135deg,var(--bg1), #330000);
+      color: #fefefe;
+      display:flex;
+      flex-direction:column;
+    }
+
+    /* --- HEADER / NAV --- */
+    header{
+      text-align:center;
+      padding:18px 12px;
+      background:var(--merah);
+      border-bottom:4px solid var(--emas);
+      box-shadow:0 4px 12px rgba(212,175,55,0.25);
+    }
+    header h1{ margin:0; font-size:22px; text-shadow:0 0 8px var(--emas); }
+    nav{
+      display:flex;
+      justify-content:center;
+      gap:18px;
+      background:#8a1919;
+      padding:10px 6px;
+      box-shadow: inset 0 -3px 0 var(--emas);
+    }
+    nav a{
+      color:#fff; text-decoration:none; font-weight:600; padding:8px 12px; border-radius:8px;
+    }
+    nav a:hover{ background:var(--merah); }
+
+    /* --- PAGE CONTAINER & TRANSITIONS --- */
+    .page-wrapper{ max-width:1000px; margin:28px auto; padding:0 16px; width:100%; flex:1; }
+    .page{
+      display:none;
+      opacity:0;
+      transform: translateY(20px);
+      transition: all 400ms ease;
+    }
+    .page.active{ display:block; opacity:1; transform: translateY(0); }
+
+    .card{ background:var(--card); border-radius:14px; padding:18px; margin-bottom:20px; box-shadow: 0 6px 24px rgba(0,0,0,0.5); }
+    .card h2{ color:var(--emas); margin-top:0; }
+    .card p{ color:#e6d8a7; line-height:1.6; }
+
+    .btn { background:var(--emas); color:#1a1a1a; border:none; padding:10px 16px; border-radius:10px; font-weight:700; cursor:pointer; }
+    .btn:disabled{ opacity:0.5; cursor:not-allowed; }
+    .link-btn { background:var(--merah); color:#fff; padding:10px 14px; border-radius:10px; text-decoration:none; font-weight:700; display:inline-block; }
+
+    /* --- QUIZ STYLES --- */
+    .quiz-container{ max-width:760px; margin:0 auto; text-align:left; }
+    input[type="text"]{ width:100%; padding:10px 12px; border-radius:8px; border:none; outline:none; margin:8px 0; background:rgba(255,255,255,0.03); color:#fff; }
+    .level-option{ background:var(--glass); padding:12px; margin:10px 0; border-radius:10px; cursor:pointer; }
+    .level-option.selected{ background: rgba(76,175,80,0.12); border:1px solid rgba(76,175,80,0.2); }
+
+    .question { font-size:1.05rem; margin:10px 0 16px 0; color:#fff; }
+    .option { background: rgba(255,255,255,0.08); padding:12px; margin:8px 0; border-radius:10px; cursor:pointer; transition:all 200ms; }
+    .option:hover{ background: rgba(255,255,255,0.14); transform: translateY(-3px); }
+    .option.locked{ cursor:default; opacity:0.95; }
+    .option.correct{ background: rgba(0,255,0,0.28); }
+    .option.wrong{ background: rgba(255,0,0,0.28); }
+
+    .controls{ display:flex; gap:12px; align-items:center; margin-top:12px; }
+    #timer{ font-weight:700; color:#fff; }
+
+    .progress-bar{ width:100%; background:rgba(255,255,255,0.12); height:10px; border-radius:10px; overflow:hidden; margin-top:12px; }
+    .progress{ height:10px; background:#00e676; width:100%; transition:width 600ms linear; }
+
+    .feedback{ margin-top:12px; font-weight:700; }
+
+    table{ width:100%; border-collapse:collapse; margin-top:12px; color:#111; }
+    th,td{ padding:8px; border:1px solid rgba(255,255,255,0.08); background:#fff; }
+    tr.benar td{ background: rgba(0,255,0,0.12); }
+    tr.salah td{ background: rgba(255,0,0,0.12); }
+
+    /* responsive */
+    @media (max-width:700px){
+      .card img{ display:none; }
+      header h1{ font-size:18px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- HEADER + NAV -->
+  <header>
+    <h1>MEDIMA — Media Interaktif Matematika</h1>
+  </header>
+  <nav>
+    <a href="#" onclick="show('home')">Materi</a>
+    <a href="#" onclick="show('quiz-start')">Quiz</a>
+    <a href="#" onclick="show('about')">Tentang</a>
+  </nav>
+
+  <!-- PAGE WRAPPER -->
+  <div class="page-wrapper">
+
+    <!-- HOME/MATERI PAGE -->
+    <section id="home" class="page active">
+      <div class="card">
+        <div style="display:flex; gap:18px; align-items:center; flex-wrap:wrap;">
+          <img src="cover.jpg" alt="Cover" style="width:140px;height:140px;object-fit:cover;border-radius:12px;background:#3a1a1a;">
+          <div style="flex:1;">
+            <h2>1. Kaidah Cacahan (Permutasi & Kombinasi)</h2>
+            <p>Materi interaktif berbasis Canva untuk memahami permutasi dan kombinasi beserta contoh aplikasi yang berguna untuk siswa.</p>
+            <div style="margin-top:10px;">
+              <a class="link-btn" href="https://www.canva.com/design/DAG1VvYqIwU/pRs1Siv8-fQJmwq7jYSa4w/edit" target="_blank">PPT Materi</a>
+              <a class="link-btn" href="https://youtu.be/YsK5BVJoqYM?si=hXQfF7U1FIMItTZU.jpg" target="_blank" style="margin-left:10px;">Video Materi</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- QUIZ START: IDENTITAS & LEVEL -->
+    <section id="quiz-start" class="page">
+      <div class="card quiz-container">
+        <h2>Mulai Kuis — Permutasi & Kombinasi</h2>
+
+        <!-- Identitas -->
+        <div style="margin-top:8px;">
+          <label><strong>Nama Lengkap</strong></label>
+          <input id="nama" type="text" placeholder="Masukkan nama lengkap...">
+          <label><strong>Asal Sekolah</strong></label>
+          <input id="sekolah" type="text" placeholder="Masukkan asal sekolah...">
+        </div>
+
+        <!-- Tombol Selanjutnya ke Pilih Level -->
+        <div style="margin-top:14px;">
+          <button class="btn" onclick="toLevel()">Selanjutnya</button>
+        </div>
+
+        <p style="margin-top:12px; color:#e6d8a7;">Catatan: Setelah mengisi identitas, pilih tingkat kesulitan. Setiap tingkat mengatur waktu per soal.</p>
+      </div>
+    </section>
+
+    <!-- PILIH LEVEL PAGE -->
+    <section id="quiz-level" class="page">
+      <div class="card quiz-container">
+        <h2>Siapa Dirimu? Pilih Tingkat Kesulitan</h2>
+        <div id="levels" style="margin-top:12px;">
+          <div class="level-option" data-time="300" data-key="Pemula" onclick="selectLevel(this)">🟢 Pemula — 5 menit per soal (300s)</div>
+          <div class="level-option" data-time="180" data-key="Ahli" onclick="selectLevel(this)">🟡 Ahli — 3 menit per soal (180s)</div>
+          <div class="level-option" data-time="90" data-key="King" onclick="selectLevel(this)">🔴 King — 1 menit 30 detik per soal (90s)</div>
+        </div>
+
+        <div style="margin-top:14px;">
+          <button id="startQuizBtn" class="btn" onclick="startQuiz()" disabled>Mulai Kuis</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- QUIZ PAGE -->
+    <section id="quiz-page" class="page">
+      <div class="card quiz-container">
+        <!-- Sound toggle -->
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
+          <div>
+            <strong id="infoPlayer">Nama: - | Sekolah: - | Level: -</strong>
+          </div>
+          <div>
+            <button id="soundToggle" class="btn" onclick="toggleSound()">🔊 Backsound ON</button>
+          </div>
+        </div>
+
+        <!-- Progress bar & timer -->
+        <div class="progress-bar" style="margin-top:12px;"><div id="progress" class="progress"></div></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;">
+          <div id="timer">⏱️ Waktu: 0:00</div>
+          <div id="qNumber">Soal 1/10</div>
+        </div>
+
+        <!-- Pertanyaan -->
+        <div style="margin-top:12px;">
+          <div class="question" id="questionText">Soal akan muncul di sini...</div>
+          <div id="optionsArea"></div>
+
+          <div class="controls">
+            <button id="submitBtn" class="btn" onclick="submitAnswer()" disabled>Kirim Jawaban</button>
+            <button id="nextBtn" class="btn" onclick="nextQuestion()" style="display:none;">Lanjut Soal</button>
+            <div id="feedback" class="feedback"></div>
+          </div>
+
+          <div id="explanation" class="explanation" style="display:none; margin-top:10px;"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- HASIL PAGE -->
+    <section id="result-page" class="page">
+      <div class="card quiz-container">
+        <h2>Hasil Kuis</h2>
+        <div id="hasilInfo"></div>
+        <div id="scoreDisplay" style="margin-top:10px; font-weight:700; font-size:1.1rem;"></div>
+
+        <div id="tableWrap" style="margin-top:12px;"></div>
+
+        <div style="margin-top:14px; display:flex; gap:10px; flex-wrap:wrap;">
+          <button class="btn" onclick="showSolutions()">Lihat Cara Pengerjaan</button>
+          <button class="btn" onclick="restart()">Mulai Ulang</button>
+          <button class="btn" onclick="show('home')">Kembali ke Materi</button>
+        </div>
+
+        <div id="kunciArea" style="margin-top:12px; display:none; text-align:left; color:#fff;"></div>
+      </div>
+    </section>
+
+    <!-- ABOUT PAGE -->
+    <section id="about" class="page">
+      <div class="card">
+        <div style="text-align:center;">
+          <img src="profil.jpg" alt="Profil" style="width:110px;height:110px;border-radius:999px; background:#3a1a1a;">
+          <h2>Tentang Saya</h2>
+          <p><strong>Nama:</strong> Ivan Arianto — <strong>NIM:</strong> B2B023048</p>
+          <p>Saya mahasiswa S1 Pendidikan Matematika Universitas Muhammadiyah Semarang — menyediakan materi interaktif untuk membantu proses belajar matematika.</p>
+        </div>
+      </div>
+    </section>
+
+  </div> <!-- /page-wrapper -->
+
+  <!-- FOOTER -->
+  <footer style="text-align:center; padding:18px; color:#a89e7e;">
+    © 2025 — Materi Interaktif Matematika | Dibuat dengan HTML, CSS, dan Canva.
+  </footer>
+
+  <!-- ===== AUDIO ===== -->
+  <audio id="backsound" loop>
+    <source src="https://cdn.pixabay.com/audio/2023/03/29/audio_cdd95e7e7e.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="benarSound"><source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_4b6a6c3e53.mp3?filename=correct-2-46134.mp3" type="audio/mpeg"></audio>
+  <audio id="salahSound"><source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_5396cb2cb1.mp3?filename=wrong-buzzer-47938.mp3" type="audio/mpeg"></audio>
+
+  <!-- ===== QUIZ LOGIC JS ===== -->
+  <script>
+    /* ---------- DATA SOAL (10 soal) ---------- */
+    const soal = [
+      { q: "Berapa banyak cara mengatur huruf-huruf pada kata 'MATEMATIKA'?",
+        options: ["907.200","453.600","302.400","75.600"], correct:0,
+        e: "10 huruf, M,A,T masing-masing 2x. Jadi 10!/(2!2!2!) = 907.200." },
+
+      { q: "Dari 5 orang, berapa banyak cara memilih 2 orang sebagai ketua dan wakil ketua?",
+        options: ["10","15","20","25"], correct:2,
+        e: "P(5,2)=5×4=20." },
+
+      { q: "Dari 10 siswa, akan dipilih 3 siswa untuk lomba tanpa memperhatikan urutan. Berapa cara?",
+        options: ["90","100","120","150"], correct:2,
+        e: "C(10,3)=120." },
+
+      { q: "Berapa banyak cara mengatur 4 orang duduk melingkar?",
+        options: ["6","12","24","8"], correct:0,
+        e: "(n−1)! = 3! = 6." },
+
+      { q: "Dari 8 orang, akan dipilih 3 orang menjadi panitia tanpa memperhatikan urutan. Berapa cara?",
+        options: ["56","64","72","48"], correct:0,
+        e: "C(8,3)=56." },
+
+      { q: "Berapa banyak susunan berbeda dari kata 'STATISTIK'?",
+        options: ["453.600","907.200","75.600","1.209.600"], correct:0,
+        e: "9 huruf, S=2,T=3,I=2 → 9!/(2!*3!*2!) = 453.600." },
+
+      { q: "Dari 12 siswa, akan dipilih 4 orang untuk menjadi pengurus inti (urutan diperhatikan). Berapa cara?",
+        options: ["11.880","10.800","12.960","11.340"], correct:0,
+        e: "P(12,4)=12×11×10×9 = 11.880." },
+
+      { q: "Dari 6 bola berbeda, berapa cara memilih 3 bola tanpa memperhatikan urutan?",
+        options: ["15","18","20","22"], correct:2,
+        e: "C(6,3)=20." },
+
+      { q: "Dari 9 orang, akan dibentuk susunan duduk di kursi lurus sebanyak 3 kursi. Berapa cara?",
+        options: ["504","720","840","360"], correct:0,
+        e: "P(9,3)=9×8×7 = 504." },
+
+      { q: "Berapa banyak cara memilih 2 kartu dari 52 kartu remi?",
+        options: ["1.020","1.275","1.326","1.400"], correct:2,
+        e: "C(52,2)=52×51/2 = 1.326." }
+    ];
+
+    /* ---------- STATE ---------- */
+    let idx = 0;
+    let skor = 0;
+    let jawabanUser = null;
+    let timer = null;
+    let waktu = 300;         // default per soal (diatur saat pilih level)
+    let waktuPerSoal = 300;
+    let raport = [];         // menyimpan jawaban + pembahasan
+    let soundOn = true;
+
+    /* AUDIO ELEMENTS */
+    const backsound = document.getElementById('backsound');
+    const benarSound = document.getElementById('benarSound');
+    const salahSound = document.getElementById('salahSound');
+
+    /* ---------- NAV / TAMPILAN HALAMAN ---------- */
+    function show(pageId){
+      // sembunyikan semua page
+      document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+      // tampilkan halaman yang diminta
+      document.getElementById(pageId).classList.add('active');
+      // tambahan: hentikan backsound saat kembali ke home
+      if(pageId === 'home' || pageId === 'about') {
+        try{ backsound.pause(); }catch(e){}
+      }
+    }
+
+    /* ---------- IDENTITAS -> LEVEL ---------- */
+    function toLevel(){
+      const nama = document.getElementById('nama').value.trim();
+      const sekolah = document.getElementById('sekolah').value.trim();
+      if(!nama || !sekolah){ alert('Isi nama dan asal sekolah terlebih dahulu!'); return; }
+      // simpan sementara ke info tampilan
+      document.getElementById('infoPlayer').textContent = `Nama: ${nama} | Sekolah: ${sekolah} | Level: -`;
+      show('quiz-level');
+    }
+
+    /* PILIH LEVEL */
+    function selectLevel(el){
+      // clear selection visual
+      document.querySelectorAll('.level-option').forEach(x=>x.classList.remove('selected'));
+      el.classList.add('selected');
+      waktuPerSoal = Number(el.dataset.time) || 300;
+      const key = el.dataset.key || 'Pemula';
+      document.getElementById('startQuizBtn').disabled = false;
+      // simpan level key di tombol start
+      document.getElementById('startQuizBtn').dataset.level = key;
+    }
+
+    /* MULAI KUIS: reset state, mulai backsound, render soal pertama */
+    function startQuiz(){
+      // reset state
+      idx = 0; skor = 0; jawabanUser = null; raport = [];
+      // set info
+      const nama = document.getElementById('nama').value.trim();
+      const sekolah = document.getElementById('sekolah').value.trim();
+      const level = document.getElementById('startQuizBtn').dataset.level || 'Pemula';
+      document.getElementById('infoPlayer').textContent = `Nama: ${nama} | Sekolah: ${sekolah} | Level: ${level}`;
+      // play sound
+      try{ backsound.volume = 0.28; if(soundOn) backsound.play().catch(()=>{}); }catch(e){}
+      // show quiz page then render soal
+      show('quiz-page');
+      renderQuestion();
+    }
+
+    /* SOUND TOGGLE */
+    function toggleSound(){
+      soundOn = !soundOn;
+      const btn = document.getElementById('soundToggle');
+      if(soundOn){ btn.textContent = '🔊 Backsound ON'; backsound.play().catch(()=>{}); }
+      else { btn.textContent = '🔈 Backsound OFF'; backsound.pause(); }
+    }
+
+    /* ---------- RENDER SOAL ---------- */
+    function renderQuestion(){
+      if(idx >= soal.length) return showResult();
+      const s = soal[idx];
+      // reset UI
+      document.getElementById('feedback').textContent = '';
+      document.getElementById('explanation').style.display = 'none';
+      document.getElementById('explanation').textContent = '';
+      document.getElementById('submitBtn').disabled = true;
+      document.getElementById('nextBtn').style.display = 'none';
+
+      // tampilkan nomor & teks soal
+      document.getElementById('qNumber').textContent = `Soal ${idx+1}/${soal.length}`;
+      document.getElementById('questionText').textContent = `Soal ${idx+1}: ${s.q}`;
+
+      // render opsi
+      const optsWrap = document.getElementById('optionsArea');
+      optsWrap.innerHTML = '';
+      s.options.forEach((opt,i)=>{
+        const el = document.createElement('div');
+        el.className = 'option';
+        el.innerHTML = `<strong>${String.fromCharCode(65+i)}.</strong> ${opt}`;
+        el.onclick = ()=> selectOption(i, el);
+        optsWrap.appendChild(el);
+      });
+
+      // set waktu per soal (already set saat pilih level)
+      waktu = waktuPerSoal;
+      updateTimerDisplay();
+      // set progress full
+      document.getElementById('progress').style.width = '100%';
+      clearInterval(timer);
+      timer = setInterval(tick, 1000);
+    }
+
+    /* ketika user memilih opsi (hanya pilih, belum submit) */
+    function selectOption(i, element){
+      jawabanUser = i;
+      // highlight pilihan yang dipilih
+      document.querySelectorAll('#optionsArea .option').forEach(o=>o.style.background='rgba(255,255,255,0.08)');
+      element.style.background = 'rgba(76,175,80,0.12)';
+      document.getElementById('submitBtn').disabled = false;
+    }
+
+    /* ---------- TIMER ---------- */
+    function tick(){
+      waktu--;
+      if(waktu < 0){
+        clearInterval(timer);
+        // otomatis submit jika waktu habis
+        submitAnswer(true);
+        return;
+      }
+      // update progress bar
+      const pct = (waktu / waktuPerSoal) * 100;
+      document.getElementById('progress').style.width = pct + '%';
+      updateTimerDisplay();
+    }
+
+    function updateTimerDisplay(){
+      const menit = Math.floor(waktu / 60);
+      const detik = waktu % 60;
+      document.getElementById('timer').textContent = `⏱️ Waktu tersisa: ${menit}:${String(detik).padStart(2,'0')}`;
+    }
+
+    /* ---------- SUBMIT JAWABAN ---------- */
+    function submitAnswer(auto=false){
+      clearInterval(timer);
+      const s = soal[idx];
+      const opts = document.querySelectorAll('#optionsArea .option');
+      // lock opsi agar tidak bisa diubah
+      opts.forEach(o=>{ o.classList.add('locked'); o.onclick = null; });
+
+      // tampilkan warna benar vs salah
+      opts.forEach((o,i)=>{
+        if(i === s.correct) o.classList.add('correct');
+        if(i === jawabanUser && i !== s.correct) o.classList.add('wrong');
+      });
+
+      const fb = document.getElementById('feedback');
+      if(jawabanUser === s.correct){
+        skor += 10;
+        fb.textContent = '✅ Jawaban Benar!';
+        if(soundOn) try{ benarSound.play().catch(()=>{}); }catch(e){}
+        raport.push({no: idx+1, kamu: s.options[jawabanUser], benar: s.options[s.correct], status:'Benar', e: s.e});
+      } else {
+        fb.textContent = auto ? '⏳ Waktu habis — jawaban dianggap salah.' : '❌ Jawaban Salah, Jangan Menyerah!';
+        if(soundOn) try{ salahSound.play().catch(()=>{}); }catch(e){}
+        raport.push({no: idx+1, kamu: jawabanUser != null ? s.options[jawabanUser] : '-', benar: s.options[s.correct], status:'Salah', e: s.e});
+      }
+
+      // tampilkan pembahasan singkat
+      document.getElementById('explanation').textContent = s.e || '';
+      document.getElementById('explanation').style.display = 'block';
+
+      // disable submit, show next
+      document.getElementById('submitBtn').disabled = true;
+      document.getElementById('nextBtn').style.display = 'inline-block';
+    }
+
+    /* LANJUT SOAL */
+    function nextQuestion(){
+      idx++;
+      jawabanUser = null;
+      renderQuestion();
+    }
+
+    /* ---------- TAMPIL HASIL ---------- */
+    function showResult(){
+      // hentikan musik
+      try{ backsound.pause(); }catch(e){}
+      // pindah ke halaman hasil
+      show('result-page');
+      // tampil info & skor
+      const nama = document.getElementById('nama').value.trim();
+      const sekolah = document.getElementById('sekolah').value.trim();
+      document.getElementById('hasilInfo').innerHTML = `<strong>${nama} (${sekolah})</strong>`;
+      document.getElementById('scoreDisplay').textContent = `Skor Akhir: ${skor}/${soal.length*10}`;
+
+      // buat tabel hasil dengan pewarnaan baris
+      let html = `<table><thead><tr><th>No</th><th>Jawaban Kamu</th><th>Jawaban Benar</th><th>Status</th></tr></thead><tbody>`;
+      raport.forEach(r=>{
+        html += `<tr class="${r.status === 'Benar' ? 'benar' : 'salah'}"><td>${r.no}</td><td>${r.kamu}</td><td>${r.benar}</td><td>${r.status}</td></tr>`;
+      });
+      html += `</tbody></table>`;
+      document.getElementById('tableWrap').innerHTML = html;
+
+      // simpan kunci di area tersembunyi
+      const kunciHtml = raport.map(r=>`<div style="margin-bottom:12px;"><strong>Soal ${r.no}:</strong><br/>Jawaban Benar: <em>${r.benar}</em><br/>Pembahasan: ${r.e || '-'}</div>`).join('');
+      document.getElementById('kunciArea').innerHTML = kunciHtml;
+      document.getElementById('kunciArea').style.display = 'none';
+    }
+
+    /* TOMBOL LIHAT KUNCI / PEMBAHASAN */
+    function showSolutions(){
+      const el = document.getElementById('kunciArea');
+      el.style.display = el.style.display === 'none' ? 'block' : 'none';
+      if(el.style.display === 'block') el.scrollIntoView({behavior:'smooth'});
+    }
+
+    /* RESTART: kembali ke halaman level untuk mulai lagi */
+    function restart(){
+      // reset
+      idx = 0; skor = 0; jawabanUser = null; raport = [];
+      // clear selection visuals
+      document.querySelectorAll('.level-option').forEach(x=>x.classList.remove('selected'));
+      document.getElementById('startQuizBtn').disabled = true;
+      document.getElementById('startQuizBtn').dataset.level = '';
+      show('quiz-level');
+    }
+
+    /* NEXT: ketika klik tombol muncul "Mulai Kuis" atau langsung dari nav, kita harus memastikan level & waktu diatur.
+       Untuk kenyamanan, set waktuPerSoal default jika user langsung ke quiz page (tapi disarankan mengikuti alur). */
+    // Jika user klik nav "Quiz" langsung, tampilkan start page (sudah dilakukan di nav handler)
+
+    // disable context menu on options to avoid weird right-click
+    document.addEventListener('contextmenu', function(e){
+      if(e.target.closest('.option')) e.preventDefault();
+    });
+
+    // optional: keyboard support (A-D to choose, Enter to submit)
+    document.addEventListener('keydown', function(e){
+      if(!document.getElementById('quiz-page').classList.contains('active')) return;
+      const key = e.key.toUpperCase();
+      if(['A','B','C','D'].includes(key)){
+        const idxKey = ['A','B','C','D'].indexOf(key);
+        const options = document.querySelectorAll('#optionsArea .option');
+        if(options[idxKey]) options[idxKey].click();
+      }
+      if(e.key === 'Enter'){
+        if(!document.getElementById('submitBtn').disabled) document.getElementById('submitBtn').click();
+        else if(document.getElementById('nextBtn').style.display !== 'none') document.getElementById('nextBtn').click();
+      }
+    });
+
+    /* Inisialisasi: tampilkan home saat load */
+    show('home');
+  </script>
+</body>
+</html>
